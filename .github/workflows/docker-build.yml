@@ -1,0 +1,111 @@
+name: 构建并推送Docker镜像到腾讯云
+
+on:
+  # 当Python文件发生变化时触发
+  push:
+    branches: [main, develop]
+    paths:
+      - "**.py"
+      - "requirements.txt"
+      - "Dockerfile"
+      - ".github/workflows/docker-build.yml"
+
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "镜像标签 (可选，默认使用commit hash)"
+        required: false
+        default: ""
+
+env:
+  # 腾讯云容器镜像服务相关配置
+  REGISTRY: ccr.ccs.tencentyun.com
+  NAMESPACE: open-source-project
+  IMAGE_NAME: api-proxy-server
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 登录腾讯云容器镜像服务
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.TENCENT_CLOUD_ACCOUNT_ID }}
+          password: ${{ secrets.TENCENT_CLOUD_ACCESS_TOKEN }}
+
+      - name: 生成镜像标签
+        id: meta
+        run: |
+          # 如果手动输入了标签，使用输入的标签，否则使用commit hash
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${{ github.sha }}"
+          fi
+
+          # 生成完整的镜像名称
+          IMAGE_TAG="${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${TAG}"
+          LATEST_TAG="${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:latest"
+
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "latest_tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+          echo "构建镜像标签: ${IMAGE_TAG}"
+          echo "最新标签: ${LATEST_TAG}"
+
+      - name: 构建并推送Docker镜像
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image_tag }}
+            ${{ steps.meta.outputs.latest_tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+      - name: 输出镜像信息
+        run: |
+          echo "✅ 镜像构建成功！"
+          echo "镜像地址: ${{ steps.meta.outputs.image_tag }}"
+          echo "最新标签: ${{ steps.meta.outputs.latest_tag }}"
+          echo ""
+          echo "🚀 部署命令:"
+          echo "docker pull ${{ steps.meta.outputs.latest_tag }}"
+          echo "docker run -d -p 8000:8000 --name api-proxy-server ${{ steps.meta.outputs.latest_tag }}"
+
+      - name: 镜像安全扫描 (可选)
+        if: github.event_name == 'push'
+        continue-on-error: true
+        run: |
+          echo "🔍 执行镜像安全扫描..."
+          # 这里可以集成安全扫描工具，如 Trivy
+          # docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+          #   aquasec/trivy image ${{ steps.meta.outputs.image_tag }}
+
+  notify:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: 构建状态通知
+        run: |
+          if [ "${{ needs.build-and-push.result }}" == "success" ]; then
+            echo "✅ Docker镜像构建并推送成功"
+          else
+            echo "❌ Docker镜像构建失败"
+            exit 1
+          fi

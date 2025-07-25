@@ -101,7 +101,8 @@ class ProxyHandler:
                 logger.info(f"请求使用mock request -->: {method} {endpoint}")
                 request_body = json.dumps(url_config["request_body"]).encode("utf-8")
         else:
-            logger.info(f"请求转发成功: {method} {endpoint}")
+            if method != "OPTIONS":
+                logger.info(f"请求转发成功: {method} {endpoint}")
                 
         
         # 没有配置或只是普通转发，转发到远程服务器

@@ -2,6 +2,7 @@ import uvicorn
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from proxy_server.routes import setup_routes
 
@@ -31,6 +32,15 @@ def create_app() -> FastAPI:
         title="代理服务器", 
         description="基于FastAPI的代理服务器",
         lifespan=lifespan
+    )
+    
+    # 添加CORS中间件 - 允许所有跨域请求
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],  # 允许所有域名
+        allow_credentials=True,  # 允许携带凭证
+        allow_methods=["*"],  # 允许所有HTTP方法
+        allow_headers=["*"],  # 允许所有请求头
     )
     
     # 设置路由
