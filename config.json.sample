@@ -1,0 +1,47 @@
+{
+  "debug": false,
+  "remote_server": "http://ip地址:8002",
+  "access_token": "Bearer 你的token",
+  "url_configs": {
+    "/api/users/": {
+      "POST": {
+        "request_body": null,
+        "response_data": {
+          "id": 40,
+          "name": "用户名",
+          "email": "邮箱"
+        }
+      },
+      "GET": {
+        "request_body": null,
+        "response_data": {
+          "count": 10,
+          "next": null,
+          "previous": null,
+          "results": [
+            {
+              "id": 18,
+              "name": "用户名",
+              "email": "邮箱"
+            },
+            {
+              "id": 43,
+              "name": "用户名",
+              "email": "邮箱"
+            }
+          ]
+        }
+      }
+    },
+    "/api/docs/": {
+      "GET": {
+        "request_body": null,
+        "response_data": {
+          "status": "success",
+          "data": "这是配置的响应数据,没有获取请求真实的后端",
+          "code": 200
+        }
+      }
+    }
+  }
+}

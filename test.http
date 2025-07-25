@@ -1,0 +1,20 @@
+# 1.1 直接访问后端，需要携带token
+# GET http://ip地址:8002/api/users/?page=1&pagesize=30&space=1
+# 1.2 通过代理访问后端，不需要携带token
+GET http://localhost:8000/api/users/?page=1&pagesize=30&space=1
+
+### 修改请求体数据，再走后端
+# http://ip地址:8002/api/users/
+POST http://localhost:8000/api/users/
+Content-Type: application/json
+
+{
+    "name": "12",
+    "email": "123@123.com"
+}
+
+
+###
+# 2.1 不走真实后端，直接返回mock数据
+# http://ip地址:8002/api/docs/?page=1&pagesize=30&search=&space=1
+GET http://localhost:8000/api/docs/?page=1&pagesize=30&search=&space=1
