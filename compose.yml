@@ -3,14 +3,14 @@ version: "3.8"
 services:
   api-proxy-server:
     container_name: api-proxy-server
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ccr.ccs.tencentyun.com/open-source-project/api-proxy-server:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
       - PYTHONPATH=/app
       - PYTHONUNBUFFERED=1
     volumes:
-      # 挂载配置文件 (如果需要的话)
       - ./config.json:/app/config.json:ro

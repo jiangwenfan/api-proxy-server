@@ -14,9 +14,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "镜像标签 (可选，默认使用commit hash)"
+        description: "镜像标签 (可选，默认使用latest)"
         required: false
-        default: ""
+        default: "latest"
 
 env:
   # 腾讯云容器镜像服务相关配置
@@ -45,11 +45,11 @@ jobs:
       - name: 生成镜像标签
         id: meta
         run: |
-          # 如果手动输入了标签，使用输入的标签，否则使用commit hash
+          # 如果手动输入了标签，使用输入的标签，否则使用latest
           if [ -n "${{ github.event.inputs.tag }}" ]; then
             TAG="${{ github.event.inputs.tag }}"
           else
-            TAG="${{ github.sha }}"
+            TAG="latest"
           fi
 
           # 生成完整的镜像名称
