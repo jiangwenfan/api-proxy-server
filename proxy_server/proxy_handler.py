@@ -1,4 +1,5 @@
 import json
+import time
 import httpx
 import logging
 from fastapi import Request, Response, HTTPException
@@ -21,6 +22,7 @@ class ProxyHandler:
         method: str, 
         headers: Dict[str, str], 
         body: Optional[bytes] = None,
+        response_delay: Optional[int] = None,
     ) -> Response:
         """转发请求到远程服务器"""
         if config_manager.debug:
@@ -47,6 +49,10 @@ class ProxyHandler:
                 if config_manager.debug:
                     logger.info(f"转发成功: {response.status_code}")
                 
+                # 如果配置了响应延时，则延时
+                if response_delay:
+                   time.sleep(response_delay)
+
                 # 创建响应
                 return Response(
                     content=response.content,
@@ -74,9 +80,11 @@ class ProxyHandler:
         if ("authorization" not in headers) and access_token:
             headers["authorization"] = access_token
        
-
         # 查找URL配置 - 传入HTTP方法
         url_config = config_manager.find_url_config(endpoint, method)
+
+        # 获取配置中的响应延时，默认不延时是None
+        response_delay = url_config.get("response_delay",None)
         
         # 查询参数存在时，拼接查询参数
         remote_url = config_manager.remote_server + endpoint
@@ -115,7 +123,8 @@ class ProxyHandler:
             url=remote_url,
             method=method,
             headers=headers,
-            body=request_body
+            body=request_body,
+            response_delay=response_delay
         )
 
 # 全局代理处理器实例
