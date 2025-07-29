@@ -69,8 +69,11 @@ class ProxyHandler:
         # 请求的headers,从配置中获取access_token并添加到请求头
         headers = dict(request.headers)
         access_token = config_manager.access_token
-        if access_token:
+        # 如果原始请求中没有authorization 且 配置中access_token不为空时
+        # 则添加token
+        if ("authorization" not in headers) and access_token:
             headers["authorization"] = access_token
+       
 
         # 查找URL配置 - 传入HTTP方法
         url_config = config_manager.find_url_config(endpoint, method)
