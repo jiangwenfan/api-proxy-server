@@ -35,7 +35,11 @@ class ConfigManager:
     @property
     def debug(self) -> bool:
         """获取调试模式"""
-        return self.config_data.get("debug", True)
+        debug_str = self.config_data.get("debug", None)
+        # None,false 为 False; true 为 True
+        if debug_str is None or debug_str == "false":
+            return False
+        return True
     
     @property
     def url_configs(self) -> Optional[Dict[str, Any]]:

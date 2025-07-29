@@ -26,7 +26,7 @@ class ProxyHandler:
     ) -> Response:
         """转发请求到远程服务器"""
         if config_manager.debug:
-            logger.info(f"实际转发请求: {method}, {url}, {headers}, {body}")
+            logger.info(f"实际转发请求: {method}, {url}, {headers}, {body}, {response_delay=}")
         try:
             async with httpx.AsyncClient() as client:
                
@@ -102,6 +102,11 @@ class ProxyHandler:
             # 如果配置了直接返回的响应数据
             if url_config.get("response_data") is not None:
                 logger.info(f"请求返回mock response <--: {method} {endpoint}")
+                # 如果配置了响应延时，则延时
+                if response_delay:
+                    # print(f"start sleep: {response_delay}")
+                    time.sleep(response_delay)
+                    # print(f"end sleep: {response_delay}")
                 return JSONResponse(
                     content=url_config["response_data"],
                     status_code=200
