@@ -15,6 +15,7 @@
       "GET": {
         "request_body": null,
         "response_delay": 2,
+        "is_enable": false,
         "response_data": {
           "count": 10,
           "next": null,

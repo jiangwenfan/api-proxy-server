@@ -61,7 +61,7 @@ class ConfigManager:
             if method in path_config:
                 return path_config[method]
         
-        return None
+        return {}
     
     
     

@@ -82,9 +82,17 @@ class ProxyHandler:
        
         # 查找URL配置 - 传入HTTP方法
         url_config = config_manager.find_url_config(endpoint, method)
+        # 默认不配置时,读取为True
+        is_enable = url_config.get("is_enable",True)
+        # print(f"is_enable: {is_enable}")
+        if is_enable == False:
+            # 当是None 或者 True 时， 启用配置；
+            # 否则不启用配置,重置为空
+            url_config = {}
+
 
         # 获取配置中的响应延时，默认不延时是None
-        response_delay = url_config and url_config.get("response_delay",None)
+        response_delay = url_config.get("response_delay",None)
         
         # 查询参数存在时，拼接查询参数
         remote_url = config_manager.remote_server + endpoint
