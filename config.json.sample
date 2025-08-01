@@ -15,6 +15,14 @@
     }
   },
   "url_configs": {
+     "/api/users/[id]/": {
+      "GET": {
+        "response_data": "{{user_res}}"
+      },
+      "DELETE": {
+        "response_data": "{{user_res}}"
+      }
+    },
     "/api/users/": {
       "POST": {
         "request_body": null,

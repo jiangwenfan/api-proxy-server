@@ -13,6 +13,8 @@ Content-Type: application/json
     "email": "123@123.com"
 }
 
+### 访问【任意】单个用户
+GET http://localhost:8000/api/users/啥/
 
 ###
 # 2.1 不走真实后端，直接返回mock数据

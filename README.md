@@ -12,3 +12,19 @@ docker compose up -d
 内容复用:
 - "common"字段中写内容
 - 在需要替换的地方`"{{xxx}}"`
+  
+
+路径通配功能：
+```
+/api/u/[id]/sdsd/
+表示匹配:
+/api/u/123/sdsd/
+/api/u/hhhh/sdsd/
+
+/api/u/[id]/
+表示匹配:
+/api/u/123/
+/api/u/xxxx/
+
+[id]表示这里可以是任意字符
+```
