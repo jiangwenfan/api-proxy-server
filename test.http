@@ -20,3 +20,6 @@ GET http://localhost:8000/api/users/啥/
 # 2.1 不走真实后端，直接返回mock数据
 # http://ip地址:8002/api/docs/?page=1&pagesize=30&search=&space=1
 GET http://localhost:8000/api/docs/?page=1&pagesize=30&search=&space=1
+
+### 访问没有 response_data 字段的接口,直接转发mock server
+GET http://localhost:8000/api/reports/

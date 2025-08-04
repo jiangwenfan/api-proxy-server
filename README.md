@@ -28,3 +28,21 @@ docker compose up -d
 
 [id]表示这里可以是任意字符
 ```
+
+mock_server功能:
+- 当没有找到匹配的路径时,转发到真实后端
+- 当匹配到时:
+  - response_data字段不存在时，转发到mock_server; 
+  - response_data是null时,忽略mock,转发真实server;
+  - response_data是具体object时，返回该object数据
+注意：当api的mock请求是stream时会转换为普通请求
+```json
+// 这里分别是要转发的mock server 和 请求该server要携带的请求头
+"mock_server": "http://ip地址:8001",
+"mock_server_headers": {
+    "token1":"token1",
+}
+
+// 高级配置,如果存在/api/前缀，转发时是否需要移除
+"remove_mock_prefix": false,
+```

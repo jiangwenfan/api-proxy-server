@@ -2,6 +2,11 @@
   "debug": false,
   "remote_server": "http://ip地址:8002",
   "access_token": "Bearer 你的token",
+  "mock_server": "http://ip地址:8001",
+  "mock_server_headers": {
+    "token1":"token1",
+  },
+  "remove_mock_prefix": false,
   "common": {
     "user_res": {
       "id": 1,

@@ -55,6 +55,21 @@ class ConfigManager:
         return self.pre_config_data.get("access_token")
 
     @property
+    def mock_server(self) -> Optional[str]:
+        """获取mock server地址"""
+        return self.pre_config_data.get("mock_server")
+
+    @property
+    def mock_server_headers(self) -> Optional[Dict[str, Any]]:
+        """获取mock server请求头"""
+        return self.pre_config_data.get("mock_server_headers", {})
+
+    @property
+    def remove_mock_prefix(self) -> bool:
+        """获取是否移除mock前缀"""
+        return self.pre_config_data.get("remove_mock_prefix", False)
+
+    @property
     def debug(self) -> bool:
         """获取调试模式"""
         debug_str = self.pre_config_data.get("debug", None)
@@ -146,34 +161,35 @@ class ConfigManager:
             匹配的配置字典或None
         """
         # 查找匹配的路径
-        # print("匹配数据:",method,endpoint)
+        # print("匹配数据:", method, endpoint)
         # 1.直接匹配
         if endpoint in self.url_configs:
             path_config = self.url_configs[endpoint]
             # 查找匹配的HTTP方法
             if method in path_config:
-                self.debug and print("直接匹配成功: ", endpoint, method)
-                return path_config[method]
+                config = path_config[method]
+                # self.debug and print("直接匹配成功: ", endpoint, method, config)
+                return config
 
         # 2.正则匹配
-        self.debug and print("开始正则匹配", endpoint, method)
+        # self.debug and print("开始正则匹配", endpoint, method)
         for url_config_key_pattern, url_config_value in self.url_configs.items():
             if re.match(url_config_key_pattern, endpoint):
-                self.debug and print(
-                    "正则匹配成功: ",
-                    url_config_key_pattern,
-                    endpoint,
-                )
-                self.debug and print(
-                    "匹配数据: ",
-                    json.dumps(url_config_value, ensure_ascii=False, indent=4),
-                )
+                # self.debug and print(
+                #     "正则匹配成功: ",
+                #     url_config_key_pattern,
+                #     endpoint,
+                # )
+                # self.debug and print(
+                #     "匹配数据: ",
+                #     json.dumps(url_config_value, ensure_ascii=False, indent=4),
+                # )
                 # 查找匹配的HTTP方法
                 if method in url_config_value:
                     return url_config_value[method]
 
-        self.debug and print("所有都匹配失败: ", endpoint, method)
-        return {}
+        # self.debug and print("所有都匹配失败,返回None: ", endpoint, method)
+        return None
 
 
 # 全局配置管理器实例
