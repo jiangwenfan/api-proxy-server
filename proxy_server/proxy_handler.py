@@ -119,7 +119,7 @@ class ProxyHandler:
             url_config = {}
 
         # 获取配置中的响应延时，默认不延时是None
-        response_delay = url_config.get("response_delay", None)
+        response_delay = url_config and url_config.get("response_delay", None)
 
         # 查询参数存在时，拼接查询参数
         if request.query_params:
